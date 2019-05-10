@@ -6,6 +6,6 @@ const filename = 'data/April 2019 daily input.xlsx';
 const workbook = xlsx.readFile(filename);
 
 const sheet = workbook.Sheets[workbook.SheetNames[0]];
-getMonthData({ sheet, filename });
+const file = getMonthData({ sheet, filename });
 
 console.debug('Done');
