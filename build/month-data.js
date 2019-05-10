@@ -1,41 +1,24 @@
-const monthMap = {
-  january: 1,
-  february: 2,
-  march: 3,
-  april: 4,
-  may: 5,
-  june: 6,
-  july: 7,
-  august: 8,
-  september: 9,
-  october: 10,
-  november: 11,
-  december: 12
-};
+const dayjs = require('dayjs');
 
-const getData = sheet => {
-  const month = getMonth(sheet);
-  console.debug('Month done: ' + month);
+const getData = file => {
+  const month = getMonth(file);
+
+  console.debug('Month done: ' + month.format());
   return {
     month
   };
 };
 
-const getMonth = sheet => {
-  const a1 = sheet['A1'] || {};
+const getMonth = ({ sheet, filename }) => {
+  const a1 = sheet['A2'] || {};
   const a1Value = a1.v || '';
 
-  const yearIndex = a1Value.search(/\d{4}/);
-  const year = parseInt(a1Value.substring(yearIndex, yearIndex + 4));
-  const textBeforeYear = a1Value.substring(0, yearIndex - 1); // -1 accounts for space
-  const monthIndex = textBeforeYear.lastIndexOf(' ') + 1; // +1 accounts for space
-  const month = monthMap[textBeforeYear.substring(monthIndex).toLowerCase()];
+  const month = dayjs(a1Value);
 
-  if (!a1) {
-    console.error('Could not extract month from A1 cell.');
-    return null;
+  if (!month.isValid() || month.day() !== 1) {
+    throw new Error(`Could not extract month from A1 cell of '${filename}'`);
   }
-  return year * 100 + month;
+  return month;
 };
 
 module.exports = {
