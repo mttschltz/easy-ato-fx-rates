@@ -1,7 +1,6 @@
 const fs = require('fs');
-const getMonthData = require('./month-data.js').getData;
 const path = require('path');
-const xlsx = require('xlsx');
+const atoMonthParser = require('./ato-month-parser').parse;
 
 // Use an extension whitelist to avoid lock files from spreadsheet apps, etc.
 const atoAllowedExtensions = ['.xlsx'];
@@ -12,10 +11,8 @@ const atoDailyRates = fs
   .readdirSync('data/ato')
   .filter(filename => atoAllowedExtensions.includes(path.extname(filename)))
   .reduce((allRates, filename) => {
-    const workbook = xlsx.readFile('data/ato/' + filename);
-    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    const monthCurrencyRates = getMonthData({ sheet, filename });
-    return Object.assign({}, allRates, monthCurrencyRates);
+    const monthRates = atoMonthParser('data/ato/' + filename);
+    return Object.assign({}, allRates, monthRates);
   }, {});
 // const filename = 'data/April 2019 daily input.xlsx';
 // const workbook = ;

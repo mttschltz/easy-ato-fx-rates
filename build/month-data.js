@@ -2,7 +2,7 @@ const dayjs = require('dayjs');
 const xlsx = require('xlsx');
 const currencyCodes = require('currency-codes');
 
-const getData = file => {
+const getMonthRates = file => {
   const month = getMonth(file);
   const dateRow = getDateRow(file, month);
   const currencyRates = getCurrencyRates(file, month, dateRow + 1);
@@ -97,7 +97,7 @@ const getCurrencyRates = ({ sheet, filename }, month, currencyRow) => {
     // Check currency
     const currency = getCurrencyFromCountry({ filename }, val);
     // get rates for dates
-    getRates({ sheet, filename }, month, monthData, row, currency);
+    getRateValues({ sheet, filename }, month, monthData, row, currency);
     row++;
   }
   return monthData;
@@ -132,7 +132,13 @@ const getCurrencyFromCountry = ({ filename }, val) => {
 
 const getDateKey = date => date.format('YYYY-MM-DD');
 
-const getRates = ({ sheet, filename }, month, monthData, row, currency) => {
+const getRateValues = (
+  { sheet, filename },
+  month,
+  monthData,
+  row,
+  currency
+) => {
   // const range = xlsx.utils.decode_range(sheet['!ref']);
   for (let d = 1, last = month.daysInMonth(); d <= last; d++) {
     const cell = xlsx.utils.encode_cell({ c: d, r: row });
@@ -158,5 +164,5 @@ const getRates = ({ sheet, filename }, month, monthData, row, currency) => {
 };
 
 module.exports = {
-  getData
+  getMonthRates
 };
