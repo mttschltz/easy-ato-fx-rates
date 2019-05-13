@@ -5,10 +5,10 @@ const currencyCodes = require('currency-codes');
 const getData = file => {
   const month = getMonth(file);
   const dateRow = getDateRow(file, month);
-  const data = getCurrencyData(file, month, dateRow + 1);
+  const currencyRates = getCurrencyRates(file, month, dateRow + 1);
 
   console.debug('Month done: ' + month.format());
-  return file;
+  return currencyRates;
 };
 
 const getMonth = ({ sheet, filename }) => {
@@ -17,7 +17,7 @@ const getMonth = ({ sheet, filename }) => {
 
   const month = dayjs(a1Value);
 
-  if (!month.isValid() || month.day() !== 1) {
+  if (!month.isValid() || month.date() !== 1) {
     throw new Error(`Could not extract month from A1 cell of '${filename}'`);
   }
   return month;
@@ -49,7 +49,7 @@ const getDateRow = ({ sheet, filename }, month) => {
   // Validate other columns
   for (let col = 1; col <= range.e.c; col++) {
     const cell = xlsx.utils.encode_cell({ c: col, r: row });
-    const val = sheet[cell] ? sheet[cell].v : '';
+    const val = sheet[cell] ? sheet[cell].w : '';
     validateDateCell(val, col, range, month, filename);
   }
 
@@ -85,7 +85,7 @@ const validateDateCell = (val, col, range, month, filename) => {
   }
 };
 
-const getCurrencyData = ({ sheet, filename }, month, currencyRow) => {
+const getCurrencyRates = ({ sheet, filename }, month, currencyRow) => {
   const range = xlsx.utils.decode_range(sheet['!ref']);
   const monthData = {};
 
@@ -96,7 +96,6 @@ const getCurrencyData = ({ sheet, filename }, month, currencyRow) => {
 
     // Check currency
     const currency = getCurrencyFromCountry({ filename }, val);
-    console.info('found currency=' + currency.code);
     // get rates for dates
     getRates({ sheet, filename }, month, monthData, row, currency);
     row++;
@@ -108,6 +107,7 @@ const countryToCurrencyFallback = {
   europe: 'EUR',
   hongkong: 'HKD',
   'new caledonia/tahiti': 'XPF',
+  'new cal/tahiti': 'XPF',
   philippines: 'PHP',
   saudi: 'SAR',
   switzerland: 'CHF',
