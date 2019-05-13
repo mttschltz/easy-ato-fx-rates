@@ -1,11 +1,13 @@
 const dayjs = require('dayjs');
 const xlsx = require('xlsx');
+const currencyCodes = require('currency-codes');
 
 const getData = file => {
-  file.month = getMonth(file);
-  const dateRow = getDateRow(file);
+  const month = getMonth(file);
+  const dateRow = getDateRow(file, month);
+  const data = getCurrencyData(file, month, dateRow + 1);
 
-  console.debug('Month done: ' + file.month.format());
+  console.debug('Month done: ' + month.format());
   return file;
 };
 
@@ -21,7 +23,7 @@ const getMonth = ({ sheet, filename }) => {
   return month;
 };
 
-const getDateRow = ({ sheet, filename, month }) => {
+const getDateRow = ({ sheet, filename }, month) => {
   // Find row with dates
   const range = xlsx.utils.decode_range(sheet['!ref']);
   let row = 0;
@@ -35,6 +37,13 @@ const getDateRow = ({ sheet, filename, month }) => {
   }
   if (row === range.e.r) {
     throw new Error(`Could not find date row in ${filename}`);
+  }
+
+  // Validate number of columns (Country + dates + Average + Quuotes)
+  if (range.e.c + 1 !== 1 + month.daysInMonth() + 2) {
+    throw new Error(
+      `Unexpected number of columns (${range.e.c}) in ${filename}`
+    );
   }
 
   // Validate other columns
@@ -73,6 +82,78 @@ const validateDateCell = (val, col, range, month, filename) => {
     throw new Error(
       `Invalid or unexpected date (${val}) in column ${col} in ${filename}`
     );
+  }
+};
+
+const getCurrencyData = ({ sheet, filename }, month, currencyRow) => {
+  const range = xlsx.utils.decode_range(sheet['!ref']);
+  const monthData = {};
+
+  let row = currencyRow;
+  while (row <= range.e.r) {
+    const cell = xlsx.utils.encode_cell({ c: 0, r: row });
+    const val = sheet[cell] ? sheet[cell].v : '';
+
+    // Check currency
+    const currency = getCurrencyFromCountry({ filename }, val);
+    console.info('found currency=' + currency.code);
+    // get rates for dates
+    getRates({ sheet, filename }, month, monthData, row, currency);
+    row++;
+  }
+  return monthData;
+};
+
+const countryToCurrencyFallback = {
+  europe: 'EUR',
+  hongkong: 'HKD',
+  'new caledonia/tahiti': 'XPF',
+  philippines: 'PHP',
+  saudi: 'SAR',
+  switzerland: 'CHF',
+  'united arab emirates': 'AED',
+  uk: 'GBP',
+  usa: 'USD'
+};
+
+const getCurrencyFromCountry = ({ filename }, val) => {
+  const country = currencyCodes.country(val);
+
+  if (country.length === 1) {
+    return currencyCodes.code(country[0].code);
+  } else {
+    const code = countryToCurrencyFallback[val.toLowerCase()];
+    if (!code) {
+      throw new Error(`No code or country found for '${val}' in ${filename}`);
+    }
+    return currencyCodes.code(code);
+  }
+};
+
+const getDateKey = date => date.format('YYYY-MM-DD');
+
+const getRates = ({ sheet, filename }, month, monthData, row, currency) => {
+  // const range = xlsx.utils.decode_range(sheet['!ref']);
+  for (let d = 1, last = month.daysInMonth(); d <= last; d++) {
+    const cell = xlsx.utils.encode_cell({ c: d, r: row });
+
+    // Parse as string (.w) instead of number (.v) to validate expected precision with regex
+    const rateStr = sheet[cell] ? sheet[cell].w : '';
+    const hasRate = rateStr !== '';
+
+    // Validate rate
+    if (hasRate && !/^\d{1,4}\.\d{4}$/.test(rateStr)) {
+      throw new Error(
+        `Invalid rate (${rateStr}) in cell '${cell}' in ${filename}`
+      );
+    }
+
+    const rate = hasRate ? sheet[cell].v : null;
+
+    const date = dayjs(month).date(d);
+    const dateKey = getDateKey(date);
+    monthData[dateKey] = monthData[dateKey] || { currencies: {} };
+    monthData[dateKey].currencies[currency.code] = { ato: rate };
   }
 };
 
