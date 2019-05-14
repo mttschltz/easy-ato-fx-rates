@@ -1,7 +1,7 @@
 const dayjs = require('dayjs');
 const xlsx = require('xlsx');
 const currencyCodes = require('currency-codes');
-const { dateKey } = require('./config.js');
+const { dateKey } = require('../config.js');
 
 // Country name strings that 'currency-codes' does not recognise
 const countryToCurrencyCodeFallback = {

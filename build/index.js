@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const atoMonthParser = require('./ato-month-parser').parse;
+const atoMonthParser = require('./ato/ato-month-parser').parse;
 const { firstDate, lastDate } = require('./index-utils.js');
 
 // Use an extension whitelist to avoid lock files from spreadsheet apps, etc.
