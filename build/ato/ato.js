@@ -12,7 +12,7 @@ const getDailyRates = () => {
   const dailyRates = readFromFiles();
 
   // TODO: Reenable
-  // validateNoMissingDates(dailyRates);
+  // validateExpectedDates(dailyRates);
 
   // TODO: Calculate average/nearest/etc
 
@@ -43,9 +43,10 @@ const readFromFiles = () => {
     }, {});
 };
 
-const validateNoMissingDates = dailyRates => {
+const validateExpectedDates = dailyRates => {
   const { firstDate, lastDate, rates } = dailyRates;
-  // start from firstDate
+
+  // Ensure all dates between firstDate and lastDate exist (inclusive)
   let dateIterator = dayjs(firstDate);
   while (!dateIterator.isAfter(lastDate)) {
     const key = dateKey(dateIterator);
@@ -54,6 +55,34 @@ const validateNoMissingDates = dailyRates => {
     }
     dateIterator = dateIterator.add(1, 'day');
   }
+
+  // Ensure no extraneous dates
+  const totalDays = lastDate.diff(firstDate, 'day') + 1;
+  if (Object.keys(rates).length !== totalDays) {
+    throw new Error(
+      `Found ${
+        Object.keys(rates).length
+      } rate entries, instead of the expected ${totalDays}`
+    );
+  }
+};
+
+const addFallbackRates = dailyRates => {
+  // closestOrEarliest
+  // closestOrLatest
+  // closestOrAverage
+  // Loop through dates
+  // If null:
+  // Find closest earlier and days between
+  // Find closest later and days between
+  // closestOrEarliest -> use closest if available, or earlier
+  // closestOrLatest -> use closest if available, or later
+  // closestOrAverage -> use closest if available, or average both
+  //
+  // For edge cases:
+  // Start: if 'earlier' is before firstDate... days between = 999
+  // End: if 'later' is after lastDate... days between = 999
+  // And in both cases... can only use latest or earliest.... no average
 };
 
 module.exports = {
