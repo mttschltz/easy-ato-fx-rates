@@ -1,21 +1,37 @@
 const fs = require('fs');
 const path = require('path');
 const atoMonthParser = require('./ato-month-parser').parse;
+const { firstDate, lastDate } = require('./index-utils.js');
 
 // Use an extension whitelist to avoid lock files from spreadsheet apps, etc.
 const atoAllowedExtensions = ['.xlsx'];
 
-console.debug('Reading files');
-
+console.debug('Starting to read files');
 const atoDailyRates = fs
   .readdirSync('data/ato')
   .filter(filename => atoAllowedExtensions.includes(path.extname(filename)))
   .reduce((allRates, filename) => {
     const monthRates = atoMonthParser('data/ato/' + filename);
-    return Object.assign({}, allRates, monthRates);
+
+    // Update dates
+    allRates.firstDate = firstDate(allRates, monthRates);
+    allRates.lastDate = lastDate(allRates, monthRates);
+
+    // Update currencies list
+    allRates.currencies = allRates.currencies || new Set();
+    allRates.currencies = new Set([
+      ...allRates.currencies,
+      ...monthRates.currencies
+    ]);
+
+    // Merge new month rates
+    allRates.rates = Object.assign({}, allRates.rates, monthRates.rates);
+    return allRates;
   }, {});
-// const filename = 'data/April 2019 daily input.xlsx';
-// const workbook = ;
+
+// TODO: Validate that dates are consecutive
+
+// TODO: Calculate average/nearest/etc
 
 // Process
 // 1. Get ATO data in an array or someting like
