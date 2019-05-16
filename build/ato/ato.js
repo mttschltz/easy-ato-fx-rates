@@ -67,24 +67,6 @@ const validateExpectedDates = dailyRates => {
   }
 };
 
-const addFallbackRates = dailyRates => {
-  // closestOrEarliest
-  // closestOrLatest
-  // closestOrAverage
-  // Loop through dates
-  // If null:
-  // Find closest earlier and days between
-  // Find closest later and days between
-  // closestOrEarliest -> use closest if available, or earlier
-  // closestOrLatest -> use closest if available, or later
-  // closestOrAverage -> use closest if available, or average both
-  //
-  // For edge cases:
-  // Start: if 'earlier' is before firstDate... days between = 999
-  // End: if 'later' is after lastDate... days between = 999
-  // And in both cases... can only use latest or earliest.... no average
-};
-
 module.exports = {
   getDailyRates
 };
