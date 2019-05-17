@@ -467,7 +467,7 @@ describe('ato-nearest.js', () => {
     });
   });
 
-  describe('not touching firstDate or lastDate', () => {
+  describe('in between firstDate and lastDate', () => {
     describe('one missing [r] [❓] [r]', () => {
       let currencyRates;
 
@@ -789,8 +789,251 @@ describe('ato-nearest.js', () => {
       });
     });
   });
-  // TODO: Are there any cases where atoNearestOrX should be null? maybe throw instead
-  // Probably the case where the currency isn't available for one month.
-  // TODO: 1 - Write tests for when currency isn't available for the previous month, and for the case of next month
-  // TODO: 2 - Refactor some code in ato-nearest to be easier to read
+  describe('currency not available for earlier month', () => {
+    beforeEach(() => {
+      dailyRates = {
+        rates: {
+          '2019-04-25': { currencies: {} },
+          '2019-04-26': { currencies: {} },
+          '2019-04-27': { currencies: {} },
+          '2019-04-28': { currencies: {} },
+          '2019-04-29': { currencies: {} },
+          '2019-04-30': { currencies: {} },
+          '2019-05-01': { currencies: { CUR: { ato: 0.0001 } } },
+          '2019-05-02': { currencies: { CUR: { ato: 0.0002 } } },
+          '2019-05-03': { currencies: { CUR: { ato: 0.0003 } } },
+          '2019-05-04': { currencies: { CUR: { ato: 0.0004 } } },
+          '2019-05-05': { currencies: { CUR: { ato: 0.0005 } } },
+          '2019-05-06': { currencies: { CUR: { ato: 0.0006 } } }
+        },
+        firstDate: dayjs('25 April 2019'),
+        lastDate: dayjs('6 May 2019')
+      };
+    });
+    describe('dates in available month', () => {
+      describe('first day only missing [x] | [❓] [r]', () => {
+        let currencyRates;
+
+        beforeEach(() => {
+          // Set missing dates
+          dailyRates.rates['2019-05-01'].currencies.CUR.ato = null;
+          // Execute
+          add(dayjs('2019-05-01'), 'CUR', dailyRates);
+          // Get filled rates for date
+          currencyRates = dailyRates.rates['2019-05-01'].currencies.CUR;
+        });
+        it('sets atoNearestOrEarlier to one day later [x] | [❓] [✓r]', () => {
+          expect(currencyRates.atoNearestOrEarlier).not.toBeNull();
+          expect(currencyRates.atoNearestOrEarlier.date).toEqualDate(
+            '2019-05-02'
+          );
+          expect(currencyRates.atoNearestOrEarlier.rate).toBe(0.0002);
+        });
+        it('sets atoNearestOrLater to one day later [x] | [❓] [✓r]', () => {
+          expect(currencyRates.atoNearestOrLater).not.toBeNull();
+          expect(currencyRates.atoNearestOrLater.date).toEqualDate(
+            '2019-05-02'
+          );
+          expect(currencyRates.atoNearestOrLater.rate).toBe(0.0002);
+        });
+      });
+      describe('first day of two missing [x] | [❓] [ ] [r]', () => {
+        let currencyRates;
+
+        beforeEach(() => {
+          // Set missing dates
+          dailyRates.rates['2019-05-01'].currencies.CUR.ato = null;
+          dailyRates.rates['2019-05-02'].currencies.CUR.ato = null;
+          // Execute
+          add(dayjs('2019-05-01'), 'CUR', dailyRates);
+          // Get filled rates for date
+          currencyRates = dailyRates.rates['2019-05-01'].currencies.CUR;
+        });
+        it('sets atoNearestOrEarlier to two days later [x] | [❓] [ ] [✓r]', () => {
+          expect(currencyRates.atoNearestOrEarlier).not.toBeNull();
+          expect(currencyRates.atoNearestOrEarlier.date).toEqualDate(
+            '2019-05-03'
+          );
+          expect(currencyRates.atoNearestOrEarlier.rate).toBe(0.0003);
+        });
+        it('sets atoNearestOrLater to two days later [x] | [❓] [ ] [✓r]', () => {
+          expect(currencyRates.atoNearestOrLater).not.toBeNull();
+          expect(currencyRates.atoNearestOrLater.date).toEqualDate(
+            '2019-05-03'
+          );
+          expect(currencyRates.atoNearestOrLater.rate).toBe(0.0003);
+        });
+      });
+      describe('second day of four missing [x] | [ ] [❓] [ ] [ ] [r]', () => {
+        let currencyRates;
+
+        beforeEach(() => {
+          // Set missing dates
+          dailyRates.rates['2019-05-01'].currencies.CUR.ato = null;
+          dailyRates.rates['2019-05-02'].currencies.CUR.ato = null;
+          dailyRates.rates['2019-05-03'].currencies.CUR.ato = null;
+          dailyRates.rates['2019-05-04'].currencies.CUR.ato = null;
+          // Execute
+          add(dayjs('2019-05-02'), 'CUR', dailyRates);
+          // Get filled rates for date
+          currencyRates = dailyRates.rates['2019-05-02'].currencies.CUR;
+        });
+        it('sets atoNearestOrEarlier to three days later [x] | [ ] [❓] [ ] [ ] [✓r]', () => {
+          expect(currencyRates.atoNearestOrEarlier).not.toBeNull();
+          expect(currencyRates.atoNearestOrEarlier.date).toEqualDate(
+            '2019-05-05'
+          );
+          expect(currencyRates.atoNearestOrEarlier.rate).toBe(0.0005);
+        });
+        it('sets atoNearestOrLater to three days later [x] | [ ] [❓] [ ] [ ] [✓r]', () => {
+          expect(currencyRates.atoNearestOrLater).not.toBeNull();
+          expect(currencyRates.atoNearestOrLater.date).toEqualDate(
+            '2019-05-05'
+          );
+          expect(currencyRates.atoNearestOrLater.rate).toBe(0.0005);
+        });
+      });
+    });
+    describe('dates in unavailable month', () => {
+      it('for last day in unavailable month, does not set atoNearestOrEarlier or atoNearestOrLater', () => {
+        add(dayjs('2019-04-30'), 'CUR', dailyRates);
+        const currencyRates = dailyRates.rates['2019-04-30'].currencies.CUR;
+        expect(currencyRates).toBeUndefined();
+      });
+      it('for second to last day in unavailable month, does not set atoNearestOrEarlier or atoNearestOrLater', () => {
+        add(dayjs('2019-04-29'), 'CUR', dailyRates);
+        const currencyRates = dailyRates.rates['2019-04-29'].currencies.CUR;
+        expect(currencyRates).toBeUndefined();
+      });
+      it('for fourth to last day in unavailable month, does not set atoNearestOrEarlier or atoNearestOrLater', () => {
+        add(dayjs('2019-04-27'), 'CUR', dailyRates);
+        const currencyRates = dailyRates.rates['2019-04-27'].currencies.CUR;
+        expect(currencyRates).toBeUndefined();
+      });
+    });
+  });
+  describe('currency not available for later month', () => {
+    beforeEach(() => {
+      dailyRates = {
+        rates: {
+          '2019-04-25': { currencies: { CUR: { ato: 0.0025 } } },
+          '2019-04-26': { currencies: { CUR: { ato: 0.0026 } } },
+          '2019-04-27': { currencies: { CUR: { ato: 0.0027 } } },
+          '2019-04-28': { currencies: { CUR: { ato: 0.0028 } } },
+          '2019-04-29': { currencies: { CUR: { ato: 0.0029 } } },
+          '2019-04-30': { currencies: { CUR: { ato: 0.003 } } },
+          '2019-05-01': { currencies: {} },
+          '2019-05-02': { currencies: {} },
+          '2019-05-03': { currencies: {} },
+          '2019-05-04': { currencies: {} },
+          '2019-05-05': { currencies: {} },
+          '2019-05-06': { currencies: {} }
+        },
+        firstDate: dayjs('25 April 2019'),
+        lastDate: dayjs('6 May 2019')
+      };
+    });
+    describe('dates in available month', () => {
+      describe('last day only missing [r] [❓] | [x]', () => {
+        let currencyRates;
+
+        beforeEach(() => {
+          // Set missing dates
+          dailyRates.rates['2019-04-30'].currencies.CUR.ato = null;
+          // Execute
+          add(dayjs('2019-04-30'), 'CUR', dailyRates);
+          // Get filled rates for date
+          currencyRates = dailyRates.rates['2019-04-30'].currencies.CUR;
+        });
+        it('sets atoNearestOrEarlier to one day earlier [✓r] [❓] | [x]', () => {
+          expect(currencyRates.atoNearestOrEarlier).not.toBeNull();
+          expect(currencyRates.atoNearestOrEarlier.date).toEqualDate(
+            '2019-04-29'
+          );
+          expect(currencyRates.atoNearestOrEarlier.rate).toBe(0.0029);
+        });
+        it('sets atoNearestOrLater to one day earlier [✓r] [❓] | [x]', () => {
+          expect(currencyRates.atoNearestOrLater).not.toBeNull();
+          expect(currencyRates.atoNearestOrLater.date).toEqualDate(
+            '2019-04-29'
+          );
+          expect(currencyRates.atoNearestOrLater.rate).toBe(0.0029);
+        });
+      });
+      describe('last day of two missing [r] [ ] [❓] | [x]', () => {
+        let currencyRates;
+
+        beforeEach(() => {
+          // Set missing dates
+          dailyRates.rates['2019-04-29'].currencies.CUR.ato = null;
+          dailyRates.rates['2019-04-30'].currencies.CUR.ato = null;
+          // Execute
+          add(dayjs('2019-04-30'), 'CUR', dailyRates);
+          // Get filled rates for date
+          currencyRates = dailyRates.rates['2019-04-30'].currencies.CUR;
+        });
+
+        it('sets atoNearestOrEarlier to two days earlier [✓r] [ ] [❓] | [x]', () => {
+          expect(currencyRates.atoNearestOrEarlier).not.toBeNull();
+          expect(currencyRates.atoNearestOrEarlier.date).toEqualDate(
+            '2019-04-28'
+          );
+          expect(currencyRates.atoNearestOrEarlier.rate).toBe(0.0028);
+        });
+        it('sets atoNearestOrLater to two days earlier [✓r] [ ] [❓] | [x]', () => {
+          expect(currencyRates.atoNearestOrLater).not.toBeNull();
+          expect(currencyRates.atoNearestOrLater.date).toEqualDate(
+            '2019-04-28'
+          );
+          expect(currencyRates.atoNearestOrLater.rate).toBe(0.0028);
+        });
+      });
+      describe('second to last day of four missing [r] [ ] [ ] [❓] [ ] | [x]', () => {
+        let currencyRates;
+
+        beforeEach(() => {
+          // Set missing dates
+          dailyRates.rates['2019-04-27'].currencies.CUR.ato = null;
+          dailyRates.rates['2019-04-28'].currencies.CUR.ato = null;
+          dailyRates.rates['2019-04-29'].currencies.CUR.ato = null;
+          dailyRates.rates['2019-04-30'].currencies.CUR.ato = null;
+          // Execute
+          add(dayjs('2019-04-29'), 'CUR', dailyRates);
+          // Get filled rates for date
+          currencyRates = dailyRates.rates['2019-04-29'].currencies.CUR;
+        });
+        it('sets atoNearestOrEarlier to three days earlier [✓r] [ ] [ ] [❓] [ ] | [x]', () => {
+          expect(currencyRates.atoNearestOrEarlier).not.toBeNull();
+          expect(currencyRates.atoNearestOrEarlier.date).toEqualDate(
+            '2019-04-26'
+          );
+          expect(currencyRates.atoNearestOrEarlier.rate).toBe(0.0026);
+        });
+        it('sets atoNearestOrLater to three days earlier [✓r] [ ] [ ] [❓] [ ] | [x]', () => {
+          expect(currencyRates.atoNearestOrLater).not.toBeNull();
+          expect(currencyRates.atoNearestOrLater.date).toEqualDate(
+            '2019-04-26'
+          );
+          expect(currencyRates.atoNearestOrLater.rate).toBe(0.0026);
+        });
+      });
+    });
+    describe('dates in unavailable month', () => {
+      it('for first day in unavailable month, does not set atoNearestOrEarlier or atoNearestOrLater', () => {
+        add(dayjs('2019-05-01'), 'CUR', dailyRates);
+        const currencyRates = dailyRates.rates['2019-05-01'].currencies.CUR;
+        expect(currencyRates).toBeUndefined();
+      });
+      it('for second day in unavailable month, does not set atoNearestOrEarlier or atoNearestOrLater', () => {
+        add(dayjs('2019-05-02'), 'CUR', dailyRates);
+        const currencyRates = dailyRates.rates['2019-05-02'].currencies.CUR;
+        expect(currencyRates).toBeUndefined();
+      });
+      it('for fourth day in unavailable month, does not set atoNearestOrEarlier or atoNearestOrLater', () => {
+        add(dayjs('2019-05-04'), 'CUR', dailyRates);
+        const currencyRates = dailyRates.rates['2019-05-04'].currencies.CUR;
+        expect(currencyRates).toBeUndefined();
+      });
+    });
+  });
 });

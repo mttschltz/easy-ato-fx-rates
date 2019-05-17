@@ -5,6 +5,9 @@ const MAX_DAYS_BETWEEN = 4; // Easter long weekend might be the longest consecut
 
 const add = (missingDate, currencyCode, dailyRates) => {
   const { rates, firstDate, lastDate } = dailyRates;
+  if (!rates[dateKey(missingDate)].currencies[currencyCode]) {
+    return;
+  }
 
   const earlierFallback = getEarlierDate(
     missingDate,
