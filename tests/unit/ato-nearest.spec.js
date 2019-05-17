@@ -47,6 +47,7 @@ describe('ato-nearest.js', () => {
         expect(currencyRates.atoNearestOrLater.date).toEqualDate('2019-05-02');
         expect(currencyRates.atoNearestOrLater.rate).toBe(0.0002);
       });
+      it('sets atoNearestOrAverage to day after |[❓] [✓r]', () => {});
     });
     describe('two missing |[❓] [ ] [r]', () => {
       let currencyRates;
@@ -73,6 +74,7 @@ describe('ato-nearest.js', () => {
         expect(currencyRates.atoNearestOrLater.date).toEqualDate('2019-05-03');
         expect(currencyRates.atoNearestOrLater.rate).toBe(0.0003);
       });
+      it('sets atoNearestOrAverage to 2 days after |[❓] [ ] [✓r]', () => {});
     });
     describe('three missing |[❓] [ ] [ ] [r]', () => {
       let currencyRates;
@@ -100,6 +102,7 @@ describe('ato-nearest.js', () => {
         expect(currencyRates.atoNearestOrLater.date).toEqualDate('2019-05-04');
         expect(currencyRates.atoNearestOrLater.rate).toBe(0.0004);
       });
+      it('sets atoNearestOrAverage to 3 days after |[❓] [ ] [ ] [✓r]', () => {});
     });
     describe('four missing |[❓] [ ] [ ] [ ] [r]', () => {
       let currencyRates;
@@ -128,6 +131,7 @@ describe('ato-nearest.js', () => {
         expect(currencyRates.atoNearestOrLater.date).toEqualDate('2019-05-05');
         expect(currencyRates.atoNearestOrLater.rate).toBe(0.0005);
       });
+      it('sets atoNearestOrAverage to 4 days after |[❓] [ ] [ ] [ ] [✓r]', () => {});
     });
     describe('five missing |[❓] [ ] [ ] [ ] [ ] [r]', () => {
       beforeEach(() => {
@@ -161,18 +165,19 @@ describe('ato-nearest.js', () => {
         currencyRates = dailyRates.rates['2019-05-02'].currencies.CUR;
       });
 
-      it('sets atoNearestOrEarlier to 4 days after |[ ] [❓] [ ] [ ] [✓r]', () => {
+      it('sets atoNearestOrEarlier to 3 days after |[ ] [❓] [ ] [ ] [✓r]', () => {
         expect(currencyRates.atoNearestOrEarlier).not.toBeNull();
         expect(currencyRates.atoNearestOrEarlier.date).toEqualDate(
           '2019-05-05'
         );
         expect(currencyRates.atoNearestOrEarlier.rate).toBe(0.0005);
       });
-      it('sets atoNearestOrLater to 4 days after |[ ] [❓] [ ] [ ] [✓r]', () => {
+      it('sets atoNearestOrLater to 3 days after |[ ] [❓] [ ] [ ] [✓r]', () => {
         expect(currencyRates.atoNearestOrLater).not.toBeNull();
         expect(currencyRates.atoNearestOrLater.date).toEqualDate('2019-05-05');
         expect(currencyRates.atoNearestOrLater.rate).toBe(0.0005);
       });
+      it('sets atoNearestOrAverage to 3 days after |[ ] [❓] [ ] [ ] [✓r]', () => {});
     });
     describe('third of four missing |[ ] [ ] [❓] [ ] [r]', () => {
       let currencyRates;
@@ -189,18 +194,19 @@ describe('ato-nearest.js', () => {
         currencyRates = dailyRates.rates['2019-05-03'].currencies.CUR;
       });
 
-      it('sets atoNearestOrEarlier to 4 days after |[ ] [ ] [❓] [ ] [✓r]', () => {
+      it('sets atoNearestOrEarlier to 2 days after |[ ] [ ] [❓] [ ] [✓r]', () => {
         expect(currencyRates.atoNearestOrEarlier).not.toBeNull();
         expect(currencyRates.atoNearestOrEarlier.date).toEqualDate(
           '2019-05-05'
         );
         expect(currencyRates.atoNearestOrEarlier.rate).toBe(0.0005);
       });
-      it('sets atoNearestOrLater to 4 days after |[ ] [ ] [❓] [ ] [✓r]', () => {
+      it('sets atoNearestOrLater to 2 days after |[ ] [ ] [❓] [ ] [✓r]', () => {
         expect(currencyRates.atoNearestOrLater).not.toBeNull();
         expect(currencyRates.atoNearestOrLater.date).toEqualDate('2019-05-05');
         expect(currencyRates.atoNearestOrLater.rate).toBe(0.0005);
       });
+      it('sets atoNearestOrAverage to 2 days after |[ ] [ ] [❓] [ ] [✓r]', () => {});
     });
     describe('fourth of four missing |[ ] [ ] [ ] [❓] [r]', () => {
       let currencyRates;
@@ -217,18 +223,19 @@ describe('ato-nearest.js', () => {
         currencyRates = dailyRates.rates['2019-05-04'].currencies.CUR;
       });
 
-      it('sets atoNearestOrEarlier to 4 days after |[ ] [ ] [ ] [❓] [✓r]', () => {
+      it('sets atoNearestOrEarlier to 1 day after |[ ] [ ] [ ] [❓] [✓r]', () => {
         expect(currencyRates.atoNearestOrEarlier).not.toBeNull();
         expect(currencyRates.atoNearestOrEarlier.date).toEqualDate(
           '2019-05-05'
         );
         expect(currencyRates.atoNearestOrEarlier.rate).toBe(0.0005);
       });
-      it('sets atoNearestOrLater to 4 days after |[ ] [ ] [ ] [❓] [✓r]', () => {
+      it('sets atoNearestOrLater to 1 day after |[ ] [ ] [ ] [❓] [✓r]', () => {
         expect(currencyRates.atoNearestOrLater).not.toBeNull();
         expect(currencyRates.atoNearestOrLater.date).toEqualDate('2019-05-05');
         expect(currencyRates.atoNearestOrLater.rate).toBe(0.0005);
       });
+      it('sets atoNearestOrAverage to 1 day after |[ ] [ ] [ ] [❓] [✓r]', () => {});
     });
   });
 
@@ -257,6 +264,7 @@ describe('ato-nearest.js', () => {
         expect(currencyRates.atoNearestOrLater.date).toEqualDate('2019-05-09');
         expect(currencyRates.atoNearestOrLater.rate).toBe(0.0009);
       });
+      it('sets atoNearestOrAverage to day before [✓r] [❓]|', () => {});
     });
     describe('two missing [r] [ ] [❓]|', () => {
       let currencyRates;
@@ -283,6 +291,7 @@ describe('ato-nearest.js', () => {
         expect(currencyRates.atoNearestOrLater.date).toEqualDate('2019-05-08');
         expect(currencyRates.atoNearestOrLater.rate).toBe(0.0008);
       });
+      it('sets atoNearestOrAverage to 2 days before [✓r] [ ] [❓]|', () => {});
     });
     describe('three missing [r] [ ] [ ] [❓]|', () => {
       let currencyRates;
@@ -310,6 +319,7 @@ describe('ato-nearest.js', () => {
         expect(currencyRates.atoNearestOrLater.date).toEqualDate('2019-05-07');
         expect(currencyRates.atoNearestOrLater.rate).toBe(0.0007);
       });
+      it('sets atoNearestOrAverage to 3 days before [✓r] [ ] [ ] [❓]|', () => {});
     });
     describe('four missing [r] [ ] [ ] [ ] [❓]|', () => {
       let currencyRates;
@@ -326,18 +336,19 @@ describe('ato-nearest.js', () => {
         currencyRates = dailyRates.rates['2019-05-10'].currencies.CUR;
       });
 
-      it('sets atoNearestOrEarlier to 3 days before [✓r] [ ] [ ] [ ] [❓]|', () => {
+      it('sets atoNearestOrEarlier to 4 days before [✓r] [ ] [ ] [ ] [❓]|', () => {
         expect(currencyRates.atoNearestOrEarlier).not.toBeNull();
         expect(currencyRates.atoNearestOrEarlier.date).toEqualDate(
           '2019-05-06'
         );
         expect(currencyRates.atoNearestOrEarlier.rate).toBe(0.0006);
       });
-      it('sets atoNearestOrLater to 3 days before [✓r] [ ] [ ] [ ] [❓]|', () => {
+      it('sets atoNearestOrLater to 4 days before [✓r] [ ] [ ] [ ] [❓]|', () => {
         expect(currencyRates.atoNearestOrLater).not.toBeNull();
         expect(currencyRates.atoNearestOrLater.date).toEqualDate('2019-05-06');
         expect(currencyRates.atoNearestOrLater.rate).toBe(0.0006);
       });
+      it('sets atoNearestOrAverage to 4 days before [✓r] [ ] [ ] [ ] [❓]|', () => {});
     });
     describe('five missing [r] [ ] [ ] [ ] [❓]|', () => {
       beforeEach(() => {
@@ -383,6 +394,7 @@ describe('ato-nearest.js', () => {
         expect(currencyRates.atoNearestOrLater.date).toEqualDate('2019-05-06');
         expect(currencyRates.atoNearestOrLater.rate).toBe(0.0006);
       });
+      it('sets atoNearestOrAverage to 3 days before [✓r] [ ] [ ] [❓] [ ]|', () => {});
     });
     describe('third to last of four missing [r] [ ] [❓] [ ] [ ]|', () => {
       let currencyRates;
@@ -399,18 +411,19 @@ describe('ato-nearest.js', () => {
         currencyRates = dailyRates.rates['2019-05-08'].currencies.CUR;
       });
 
-      it('sets atoNearestOrEarlier to 3 days before [✓r] [ ] [❓] [ ] [ ]|', () => {
+      it('sets atoNearestOrEarlier to 2 days before [✓r] [ ] [❓] [ ] [ ]|', () => {
         expect(currencyRates.atoNearestOrEarlier).not.toBeNull();
         expect(currencyRates.atoNearestOrEarlier.date).toEqualDate(
           '2019-05-06'
         );
         expect(currencyRates.atoNearestOrEarlier.rate).toBe(0.0006);
       });
-      it('sets atoNearestOrLater to 3 days before [✓r] [ ] [❓] [ ] [ ]|', () => {
+      it('sets atoNearestOrLater to 2 days before [✓r] [ ] [❓] [ ] [ ]|', () => {
         expect(currencyRates.atoNearestOrLater).not.toBeNull();
         expect(currencyRates.atoNearestOrLater.date).toEqualDate('2019-05-06');
         expect(currencyRates.atoNearestOrLater.rate).toBe(0.0006);
       });
+      it('sets atoNearestOrAverage to 2 days before [✓r] [ ] [❓] [ ] [ ]|', () => {});
     });
     describe('fourth to last of four missing [r] [❓] [ ] [ ] [ ]|', () => {
       let currencyRates;
@@ -427,18 +440,19 @@ describe('ato-nearest.js', () => {
         currencyRates = dailyRates.rates['2019-05-07'].currencies.CUR;
       });
 
-      it('sets atoNearestOrEarlier to 3 days before [✓r] [❓] [ ] [ ] [ ]|', () => {
+      it('sets atoNearestOrEarlier to 1 day before [✓r] [❓] [ ] [ ] [ ]|', () => {
         expect(currencyRates.atoNearestOrEarlier).not.toBeNull();
         expect(currencyRates.atoNearestOrEarlier.date).toEqualDate(
           '2019-05-06'
         );
         expect(currencyRates.atoNearestOrEarlier.rate).toBe(0.0006);
       });
-      it('sets atoNearestOrLater to 3 days before [✓r] [❓] [ ] [ ] [ ]|', () => {
+      it('sets atoNearestOrLater to 1 day before [✓r] [❓] [ ] [ ] [ ]|', () => {
         expect(currencyRates.atoNearestOrLater).not.toBeNull();
         expect(currencyRates.atoNearestOrLater.date).toEqualDate('2019-05-06');
         expect(currencyRates.atoNearestOrLater.rate).toBe(0.0006);
       });
+      it('sets atoNearestOrAverage to 1 day before [✓r] [❓] [ ] [ ] [ ]|', () => {});
     });
   });
 
@@ -467,6 +481,7 @@ describe('ato-nearest.js', () => {
         expect(currencyRates.atoNearestOrLater.date).toEqualDate('2019-05-04');
         expect(currencyRates.atoNearestOrLater.rate).toBe(0.0004);
       });
+      it('sets atoNearestOrAverage to average of day before and after [½r] [❓] [½r]', () => {});
     });
     describe('first of two missing [r] [❓] [ ] [r]', () => {
       let currencyRates;
@@ -493,6 +508,7 @@ describe('ato-nearest.js', () => {
         expect(currencyRates.atoNearestOrLater.date).toEqualDate('2019-05-02');
         expect(currencyRates.atoNearestOrLater.rate).toBe(0.0002);
       });
+      it('sets atoNearestOrAverage to day before [✓r] [❓] [ ] [r]', () => {});
     });
     describe('second of two missing [r] [ ] [❓] [r]', () => {
       let currencyRates;
@@ -519,6 +535,7 @@ describe('ato-nearest.js', () => {
         expect(currencyRates.atoNearestOrLater.date).toEqualDate('2019-05-05');
         expect(currencyRates.atoNearestOrLater.rate).toBe(0.0005);
       });
+      it('sets atoNearestOrAverage to day after [r] [ ] [❓] [✓r]', () => {});
     });
     describe('first of three missing [r] [❓] [ ] [ ] [r]', () => {
       let currencyRates;
@@ -546,6 +563,7 @@ describe('ato-nearest.js', () => {
         expect(currencyRates.atoNearestOrLater.date).toEqualDate('2019-05-02');
         expect(currencyRates.atoNearestOrLater.rate).toBe(0.0002);
       });
+      it('sets atoNearestOrAverage to day before [✓r] [❓] [ ] [ ] [r]', () => {});
     });
     describe('second of three missing [r] [ ] [❓] [ ] [r]', () => {
       let currencyRates;
@@ -573,6 +591,7 @@ describe('ato-nearest.js', () => {
         expect(currencyRates.atoNearestOrLater.date).toEqualDate('2019-05-06');
         expect(currencyRates.atoNearestOrLater.rate).toBe(0.0006);
       });
+      it('sets atoNearestOrAverage to average of two days after and two days before [½r] [ ] [❓] [ ] [½r]', () => {});
     });
     describe('third of three missing [r] [ ] [ ] [❓] [r]', () => {
       let currencyRates;
@@ -600,6 +619,7 @@ describe('ato-nearest.js', () => {
         expect(currencyRates.atoNearestOrLater.date).toEqualDate('2019-05-06');
         expect(currencyRates.atoNearestOrLater.rate).toBe(0.0006);
       });
+      it('sets atoNearestOrAverage to one day after [r] [ ] [ ] [❓] [✓r]', () => {});
     });
     describe('first of four missing [r] [❓] [ ] [ ] [ ] [r]', () => {
       let currencyRates;
@@ -628,6 +648,7 @@ describe('ato-nearest.js', () => {
         expect(currencyRates.atoNearestOrLater.date).toEqualDate('2019-05-02');
         expect(currencyRates.atoNearestOrLater.rate).toBe(0.0002);
       });
+      it('sets atoNearestOrAverage to one day before [✓r] [❓] [ ] [ ] [ ] [r]', () => {});
     });
     describe('second of four missing [r] [ ] [❓] [ ] [ ] [r]', () => {
       let currencyRates;
@@ -656,6 +677,7 @@ describe('ato-nearest.js', () => {
         expect(currencyRates.atoNearestOrLater.date).toEqualDate('2019-05-02');
         expect(currencyRates.atoNearestOrLater.rate).toBe(0.0002);
       });
+      it('sets atoNearestOrAverage to two days before [✓r] [ ] [❓] [ ] [ ] [r]', () => {});
     });
     describe('third of four missing [r] [ ] [ ] [❓] [ ] [r]', () => {
       let currencyRates;
@@ -684,6 +706,7 @@ describe('ato-nearest.js', () => {
         expect(currencyRates.atoNearestOrLater.date).toEqualDate('2019-05-07');
         expect(currencyRates.atoNearestOrLater.rate).toBe(0.0007);
       });
+      it('sets atoNearestOrAverage to two days after [r] [ ] [ ] [❓] [ ] [✓r]', () => {});
     });
     describe('fourth of four missing [r] [ ] [ ] [ ] [❓] [r]', () => {
       let currencyRates;
@@ -712,6 +735,7 @@ describe('ato-nearest.js', () => {
         expect(currencyRates.atoNearestOrLater.date).toEqualDate('2019-05-07');
         expect(currencyRates.atoNearestOrLater.rate).toBe(0.0007);
       });
+      it('sets atoNearestOrAverage to one day after [r] [ ] [ ] [ ] [❓] [✓r]', () => {});
     });
     describe('x of five missing', () => {
       beforeEach(() => {
@@ -811,6 +835,7 @@ describe('ato-nearest.js', () => {
           );
           expect(currencyRates.atoNearestOrLater.rate).toBe(0.0002);
         });
+        it('sets atoNearestOrAverage to one day later [x] | [❓] [✓r]', () => {});
       });
       describe('first day of two missing [x] | [❓] [ ] [r]', () => {
         let currencyRates;
@@ -838,6 +863,7 @@ describe('ato-nearest.js', () => {
           );
           expect(currencyRates.atoNearestOrLater.rate).toBe(0.0003);
         });
+        it('sets atoNearestOrAverage to two days later [x] | [❓] [ ] [✓r]', () => {});
       });
       describe('second day of four missing [x] | [ ] [❓] [ ] [ ] [r]', () => {
         let currencyRates;
@@ -867,6 +893,7 @@ describe('ato-nearest.js', () => {
           );
           expect(currencyRates.atoNearestOrLater.rate).toBe(0.0005);
         });
+        it('sets atoNearestOrAverage to three days later [x] | [ ] [❓] [ ] [ ] [✓r]', () => {});
       });
     });
     describe('dates in unavailable month', () => {
@@ -934,6 +961,7 @@ describe('ato-nearest.js', () => {
           );
           expect(currencyRates.atoNearestOrLater.rate).toBe(0.0029);
         });
+        it('sets atoNearestOrAverage to one day earlier [✓r] [❓] | [x]', () => {});
       });
       describe('last day of two missing [r] [ ] [❓] | [x]', () => {
         let currencyRates;
@@ -962,6 +990,7 @@ describe('ato-nearest.js', () => {
           );
           expect(currencyRates.atoNearestOrLater.rate).toBe(0.0028);
         });
+        it('sets atoNearestOrAverage to two days earlier [✓r] [ ] [❓] | [x]', () => {});
       });
       describe('second to last day of four missing [r] [ ] [ ] [❓] [ ] | [x]', () => {
         let currencyRates;
@@ -991,6 +1020,7 @@ describe('ato-nearest.js', () => {
           );
           expect(currencyRates.atoNearestOrLater.rate).toBe(0.0026);
         });
+        it('sets atoNearestOrAverage to three days earlier [✓r] [ ] [ ] [❓] [ ] | [x]', () => {});
       });
     });
     describe('dates in unavailable month', () => {
