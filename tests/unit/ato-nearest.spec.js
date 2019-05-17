@@ -1,30 +1,5 @@
-// import { shallowMount } from "@vue/test-utils";
-// import HelloWorld from "@/components/HelloWorld.vue";
 const add = require('../../build/ato/ato-nearest.js').add;
 const dayjs = require('dayjs');
-
-expect.extend({
-  toEqualDate(actual, expected) {
-    const pass = dayjs(actual).isSame(dayjs(expected));
-    if (pass) {
-      return {
-        message: () =>
-          `expected ${dayjs(actual).format('YYYY-MM-DD')} to not equal ${dayjs(
-            expected
-          ).format('YYYY-MM-DD')}`,
-        pass
-      };
-    } else {
-      return {
-        message: () =>
-          `expected ${dayjs(actual).format('YYYY-MM-DD')} to equal ${dayjs(
-            expected
-          ).format('YYYY-MM-DD')}`,
-        pass
-      };
-    }
-  }
-});
 
 describe('ato-nearest.js', () => {
   let dailyRates;
@@ -1036,4 +1011,27 @@ describe('ato-nearest.js', () => {
       });
     });
   });
+});
+
+expect.extend({
+  toEqualDate(actual, expected) {
+    const pass = dayjs(actual).isSame(dayjs(expected));
+    if (pass) {
+      return {
+        message: () =>
+          `expected ${dayjs(actual).format('YYYY-MM-DD')} to not equal ${dayjs(
+            expected
+          ).format('YYYY-MM-DD')}`,
+        pass
+      };
+    } else {
+      return {
+        message: () =>
+          `expected ${dayjs(actual).format('YYYY-MM-DD')} to equal ${dayjs(
+            expected
+          ).format('YYYY-MM-DD')}`,
+        pass
+      };
+    }
+  }
 });
