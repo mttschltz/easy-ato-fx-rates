@@ -1,5 +1,6 @@
 const dayjs = require('dayjs');
 const { dateKey } = require('../config.js');
+const currency = require('currency.js');
 
 const MAX_DAYS_BETWEEN = 4; // Easter long weekend might be the longest consecutive unavailable range
 
@@ -18,7 +19,7 @@ const add = (missingDate, currencyCode, dailyRates) => {
   const earlierDateDiff =
     earlierFallback === null
       ? null
-      : missingDate.diff(earlierFallback.date, 'day');
+      : missingDate.diff(earlierFallback.dates[0], 'day');
 
   const laterFallback = getLaterDate(
     missingDate,
@@ -27,7 +28,9 @@ const add = (missingDate, currencyCode, dailyRates) => {
     lastDate
   );
   const laterDateDiff =
-    laterFallback === null ? null : laterFallback.date.diff(missingDate, 'day');
+    laterFallback === null
+      ? null
+      : laterFallback.dates[0].diff(missingDate, 'day');
 
   const missingDays =
     (typeof earlierDateDiff === 'number' ? earlierDateDiff : 0) +
@@ -77,6 +80,40 @@ const add = (missingDate, currencyCode, dailyRates) => {
     return laterDateDiff <= earlierDateDiff ? laterFallback : earlierFallback;
   };
 
+  const nearestOrAverage = (
+    earlierDateDiff,
+    laterDateDiff,
+    earlierFallback,
+    laterFallback,
+    missingDate
+  ) => {
+    // If
+    if (earlierDateDiff === null && laterDateDiff === null) {
+      throw new Error(
+        `atoNearestOrLater could not be calculated for ${missingDate}`
+      );
+    }
+    earlierDateDiff = earlierDateDiff === null ? 999 : earlierDateDiff;
+    laterDateDiff = laterDateDiff === null ? 999 : laterDateDiff;
+
+    if (earlierDateDiff < laterDateDiff) {
+      return earlierFallback;
+    } else if (laterDateDiff < earlierDateDiff) {
+      return laterFallback;
+    }
+
+    const rateObject = currency(earlierFallback.rate, {
+      precision: 5,
+      errorOnInvalid: true
+    })
+      .add(laterFallback.rate)
+      .distribute(2)[0];
+    return {
+      rate: parseFloat(rateObject),
+      dates: [earlierFallback.dates[0], laterFallback.dates[0]]
+    };
+  };
+
   const currencyRates = rates[dateKey(missingDate)].currencies[currencyCode];
   currencyRates.atoNearestOrEarlier = nearestOrEarlier(
     earlierDateDiff,
@@ -92,12 +129,13 @@ const add = (missingDate, currencyCode, dailyRates) => {
     laterFallback,
     missingDate
   );
-
-  // TODO: If both null?!?! throw error!!
-
-  // TODO: Average... USE currency.js or similar to prevent float bullshit
-
-  // TODO: Test edge cases when earlier is < firstDate, and later is > lastDate
+  currencyRates.atoNearestOrAverage = nearestOrAverage(
+    earlierDateDiff,
+    laterDateDiff,
+    earlierFallback,
+    laterFallback,
+    missingDate
+  );
 };
 
 // TODO: Important!! What if currency is not available for one inbetweeen month?!
@@ -123,7 +161,7 @@ const getEarlierDate = (missingDate, currencyCode, rates, firstDate) => {
       // Rate found for date
       return {
         rate: atoRate,
-        date: earlierDate
+        dates: [earlierDate]
       };
     }
     // Rate not available for date
@@ -158,7 +196,7 @@ const getLaterDate = (missingDate, currencyCode, rates, lastDate) => {
       // Rate found for date
       return {
         rate: atoRate,
-        date: laterDate
+        dates: [laterDate]
       };
     }
     // Rate not available for date
