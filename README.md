@@ -1,4 +1,4 @@
-# easy-ato-fx-rates
+# (WIP) easy-ato-fx-rates
 
 ## Disclaimer
 The information, code, and its outputs from this repository are not providing any kind of general or individual advice.
