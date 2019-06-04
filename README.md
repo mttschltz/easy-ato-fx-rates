@@ -20,5 +20,11 @@ The ATO's daily rates:
 Provide an interface for quickly and flexibly retrieving daily foreign exchange rates. Allow the user to select a preference for how weekends and public holidays are handled.
 
 ## Status
-
-
+- [x] Retrieve provided daily ATO rates from spreadsheets (excludes weekends/public holidays)
+- [x] Provide a nearest date fallback with preference for the **earlier** date (for when there's an odd number of missing dates)
+- [x] Provide a nearest date fallback with preference for the **later** date (see above)
+- [x] Provide a nearest date fallback with an **average** between earlier and later date (see above)
+- [ ] Parse RBA rates from spreadsheets and include as a fallback
+- [ ] Create a UI for retreiving rates for a single date, with a preference for the fallback type
+- [ ] Create a UI for retreiving a date range, with a preference for the fallback type
+- [ ] Deploy to Netlify
