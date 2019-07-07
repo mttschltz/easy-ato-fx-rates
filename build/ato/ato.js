@@ -23,10 +23,10 @@ const readFromFiles = () => {
   return fs
     .readdirSync('data/ato')
     .filter(filename => ALLOWED_EXTENSIONS.includes(path.extname(filename)))
-    .reduce(mergeMonthlyRatesFromFile, {});
+    .reduce(mergeMonthDailyRatesFromFile, {});
 };
 
-const mergeMonthlyRatesFromFile = function(allRates, filename) {
+const mergeMonthDailyRatesFromFile = function(allRates, filename) {
   const monthDailyRates = atoMonthParser('data/ato/' + filename);
 
   updateAllRatesDates(allRates, monthDailyRates);
