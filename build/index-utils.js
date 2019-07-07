@@ -1,3 +1,4 @@
+// Get earliest first date from allRates or monthRates
 const firstDate = (allRates, monthRates) => {
   if (!allRates.firstDate) {
     return monthRates.firstDate;
@@ -6,6 +7,7 @@ const firstDate = (allRates, monthRates) => {
   return allRatesIsBefore ? allRates.firstDate : monthRates.firstDate;
 };
 
+// Get latest last date from allRates or monthRates
 const lastDate = (allRates, monthRates) => {
   if (!allRates.lastDate) {
     return monthRates.lastDate;
