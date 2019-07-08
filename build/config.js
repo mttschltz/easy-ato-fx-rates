@@ -1,5 +1,5 @@
-const dateKey = date => date.format('YYYY-MM-DD');
+const dateToKey = date => date.format('YYYY-MM-DD');
 
 module.exports = {
-  dateKey
+  dateToKey
 };

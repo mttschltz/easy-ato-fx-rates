@@ -1,12 +1,12 @@
 const dayjs = require('dayjs');
-const { dateKey } = require('../config.js');
+const { dateToKey } = require('../config.js');
 const currency = require('currency.js');
 
 const MAX_DAYS_BETWEEN = 4; // Easter long weekend might be the longest consecutive unavailable range
 
 const add = (missingDate, currencyCode, dailyRates) => {
   const { rates, firstDate, lastDate } = dailyRates;
-  if (!rates[dateKey(missingDate)].currencies[currencyCode]) {
+  if (!rates[dateToKey(missingDate)].currencies[currencyCode]) {
     return;
   }
 
@@ -114,7 +114,7 @@ const add = (missingDate, currencyCode, dailyRates) => {
     };
   };
 
-  const currencyRates = rates[dateKey(missingDate)].currencies[currencyCode];
+  const currencyRates = rates[dateToKey(missingDate)].currencies[currencyCode];
   currencyRates.atoNearestOrEarlier = nearestOrEarlier(
     earlierDateDiff,
     laterDateDiff,
@@ -151,7 +151,8 @@ const getEarlierDate = (missingDate, currencyCode, rates, firstDate) => {
 
   let earlierDate = dayjs(missingDate).subtract(1, 'day');
   for (let i = 1; i <= maxDiff; i++) {
-    const currencyRates = rates[dateKey(earlierDate)].currencies[currencyCode];
+    const currencyRates =
+      rates[dateToKey(earlierDate)].currencies[currencyCode];
     if (!currencyRates) {
       // Currency not available (maybe only for more recent dates)
       return null;
@@ -186,7 +187,7 @@ const getLaterDate = (missingDate, currencyCode, rates, lastDate) => {
 
   let laterDate = dayjs(missingDate).add(1, 'day');
   for (let i = 1; i <= maxDiff; i++) {
-    const currencyRates = rates[dateKey(laterDate)].currencies[currencyCode];
+    const currencyRates = rates[dateToKey(laterDate)].currencies[currencyCode];
     if (!currencyRates) {
       // Currency not available (maybe only for more recent dates)
       return null;

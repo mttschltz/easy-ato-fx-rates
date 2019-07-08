@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const atoMonthParser = require('./ato-month-parser.js').parse;
 const { firstDate, lastDate } = require('../index-utils.js');
-const { dateKey } = require('../config.js');
+const { dateToKey } = require('../config.js');
 
 // Use an extension whitelist to avoid lock files from spreadsheet apps, etc.
 const ALLOWED_EXTENSIONS = ['.xlsx'];
@@ -64,7 +64,7 @@ const validateAllDatesExistBetweenFirstAndLast = function(dailyRates) {
   // Ensure all dates between firstDate and lastDate exist (inclusive)
   let dateIterator = dayjs(firstDate);
   while (!dateIterator.isAfter(lastDate)) {
-    const key = dateKey(dateIterator);
+    const key = dateToKey(dateIterator);
     if (!rates[key]) {
       throw new Error(`Missing an ATO Daily Rate for ${dateIterator.format()}`);
     }

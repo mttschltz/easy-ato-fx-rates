@@ -1,26 +1,28 @@
 const xlsx = require('xlsx');
 const dayjs = require('dayjs');
-const { addMonthRates } = require('./ato-month-parser-rates.js');
+const {
+  addDailyRates: addDailyRatesForMonth
+} = require('./ato-month-parser-rates.js');
 const { getFirstDate, getDateRow } = require('./ato-month-parser-utils.js');
 
 const parse = filename => {
   // Convert sheet to month object with rates
   const monthContainer = createMonthContainer(filename);
-  addMonthRates(monthContainer);
+  addDailyRatesForMonth(monthContainer);
 
   return createMonthDailyRates(monthContainer);
 };
 
 const createMonthContainer = filename => {
   const sheet = getSheet(filename);
-  const month = {
+  const monthContainer = {
     sheet,
     filename,
     range: xlsx.utils.decode_range(sheet['!ref'])
   };
-  month.firstDate = getFirstDate(month);
-  month.dateRow = getDateRow(month);
-  return month;
+  monthContainer.firstDate = getFirstDate(monthContainer);
+  monthContainer.dateRow = getDateRow(monthContainer);
+  return monthContainer;
 };
 
 const getSheet = filename => {
@@ -29,14 +31,18 @@ const getSheet = filename => {
   return workbook.Sheets[workbook.SheetNames[0]];
 };
 
-const createMonthDailyRates = month => {
-  const lastDate = dayjs(month.firstDate).date(month.firstDate.daysInMonth());
-  const firstDateRateEntry = Object.keys(month.rates)[0];
-  const currencies = Object.keys(month.rates[firstDateRateEntry].currencies);
+const createMonthDailyRates = monthContainer => {
+  const lastDate = dayjs(monthContainer.firstDate).date(
+    monthContainer.firstDate.daysInMonth()
+  );
+  const firstDateRateEntry = Object.keys(monthContainer.rates)[0];
+  const currencies = Object.keys(
+    monthContainer.rates[firstDateRateEntry].currencies
+  );
 
   return {
-    rates: month.rates,
-    firstDate: month.firstDate,
+    rates: monthContainer.rates,
+    firstDate: monthContainer.firstDate,
     lastDate,
     currencies
   };
