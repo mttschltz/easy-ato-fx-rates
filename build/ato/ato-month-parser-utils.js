@@ -1,21 +1,20 @@
 const dayjs = require('dayjs');
 const xlsx = require('xlsx');
 
-const getFirstDate = month => {
-  const a1 = month.sheet['A1'] || {};
+const getFirstDateOfMonth = ({ filename, sheet }) => {
+  const a1 = sheet['A1'] || {};
   const a1Value = a1.v || '';
 
   const monthFirstDate = dayjs(a1Value);
 
   if (!monthFirstDate.isValid() || monthFirstDate.date() !== 1) {
-    throw new Error(
-      `Could not extract month from A1 cell of '${month.filename}'`
-    );
+    throw new Error(`Could not extract month from A1 cell of '${filename}'`);
   }
   return monthFirstDate;
 };
 
-const getDateRow = ({ sheet, filename, firstDate }) => {
+const getDateRowOfSheet = monthContainer => {
+  const { filename, sheet } = monthContainer;
   // Find row with dates
   const range = xlsx.utils.decode_range(sheet['!ref']);
   let row = 0;
@@ -31,53 +30,72 @@ const getDateRow = ({ sheet, filename, firstDate }) => {
     throw new Error(`Could not find date row in ${filename}`);
   }
 
+  validateColumnCount(monthContainer, range);
+  validateColumnHeadings(monthContainer, range, row);
+
+  // Return first country
+  return row;
+};
+
+const validateColumnCount = ({ filename, firstDate }, range) => {
   // Validate number of columns (Country + dates + Average + Quuotes)
   if (range.e.c + 1 !== 1 + firstDate.daysInMonth() + 2) {
     throw new Error(
       `Unexpected number of columns (${range.e.c}) in ${filename}`
     );
   }
-
-  // Validate other columns
-  for (let col = 1; col <= range.e.c; col++) {
-    const cell = xlsx.utils.encode_cell({ c: col, r: row });
-    const val = sheet[cell] ? sheet[cell].w : '';
-    validateDateCell(val, col, range, firstDate, filename);
-  }
-
-  // Return first country
-  return row;
 };
 
-const validateDateCell = (val, col, range, month, filename) => {
+const validateColumnHeadings = (monthContainer, range, row) => {
+  const { sheet } = monthContainer;
+  for (let columnNum = 1; columnNum <= range.e.c; columnNum++) {
+    const headingCell = xlsx.utils.encode_cell({ c: columnNum, r: row });
+    const headingCellValue = sheet[headingCell] ? sheet[headingCell].w : '';
+    validateColumnHeadingCell(
+      monthContainer,
+      headingCellValue,
+      columnNum,
+      range
+    );
+  }
+};
+
+const validateColumnHeadingCell = (
+  { filename, firstDate },
+  headingCellValue,
+  columnNum,
+  range
+) => {
   // Second to last col: Average
-  if (col === range.e.c - 1) {
-    if (val.toLowerCase() !== 'average') {
+  if (columnNum === range.e.c - 1) {
+    if (headingCellValue.toLowerCase() !== 'average') {
       throw new Error(`Could not find 'average' col in ${filename}`);
     }
     return;
   }
+
   // Last col: Quotes
-  if (col === range.e.c) {
-    if (val.toLowerCase() !== 'quotes') {
+  if (columnNum === range.e.c) {
+    if (headingCellValue.toLowerCase() !== 'quotes') {
       throw new Error(`Could not find 'quotes' col in ${filename}`);
     }
     return;
   }
-  // Date columns
-  const date = dayjs(val);
+
+  // Other (date) columns
+  const date = dayjs(headingCellValue);
   if (
     !date.isValid() ||
-    date.date() !== col ||
-    date.month() !== month.month()
+    date.date() !== columnNum ||
+    date.month() !== firstDate.month()
   ) {
     throw new Error(
-      `Invalid or unexpected date (${val}) in column ${col} in ${filename}`
+      `Invalid or unexpected date (${headingCellValue}) in column ${columnNum} in ${filename}`
     );
   }
 };
 
 module.exports = {
-  getFirstDate,
-  getDateRow
+  getFirstDateOfMonth,
+  getDateRowOfSheet
 };
